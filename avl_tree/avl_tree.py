@@ -75,7 +75,11 @@ class AVLTree:
     of the new parent. 
     """
     def left_rotate(self):
-        pass
+        parent = self.node
+        child = self.node.right.node
+        self.node = child
+        parent.right = child.left
+        child.left = AVLTree(parent)
 
     """
     Perform a right rotation, making the left child of this
@@ -83,7 +87,11 @@ class AVLTree:
     of the new parent. 
     """
     def right_rotate(self):
-        pass
+        parent = self.node
+        child = self.node.left.node
+        self.node = child
+        parent.left = child.right
+        child.right = AVLTree(parent)
 
     """
     Sets in motion the rebalancing logic to ensure the
@@ -91,7 +99,16 @@ class AVLTree:
     1 or -1
     """
     def rebalance(self):
-        pass
+        self.update_height()
+        self.update_balance()
+
+        if self.balance < 0:
+            self.node.right.rebalance()
+            self.left_rotate()
+
+        elif self.balance > 0:
+            self.node.left.rebalance()
+            self.right_rotate()
         
     """
     Uses the same insertion logic as a binary search tree
@@ -105,13 +122,30 @@ class AVLTree:
             self.node = Node(key)
             return
 
-        if key >= node.key:
-            if node.right:
-                node.right.insert(key)
-            else:
-                node.right = AVLTree(Node(key))
-        if key < node.key:
-            if node.left:
-                node.left.insert(key)
-            else:
-                node.left = AVLTree(Node(key))
+        while True:
+            if key >= node.key:
+                if node.right:
+                    node = node.right.node
+                else:
+                    node.right = AVLTree(Node(key))
+                    break
+            if key < node.key:
+                if node.left:
+                    node = node.left.node
+                else:
+                    node.left = AVLTree(Node(key))
+                    break
+
+        self.update_height()
+        self.update_balance()
+        if self.balance < -1 or self.balance > 1:
+            self.rebalance()
+
+tree = AVLTree()
+tree.insert(5)
+tree.insert(3)
+tree.insert(6)
+tree.insert(7)
+tree.display()
+tree.insert(8)
+tree.display()
