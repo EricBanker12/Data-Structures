@@ -97,26 +97,24 @@ class AVLTree:
     1 or -1
     """
     def rebalance(self):
+        if self.node.right:
+            self.node.right.rebalance()
+
+        if self.node.left:
+            self.node.left.rebalance()
+
         self.update_height()
         self.update_balance()
 
         if self.balance < -1:
-            self.node.right.rebalance()
             if self.node.right.balance > 0:
                 self.node.right.right_rotate()
-            self.update_height()
-            self.update_balance()
-            if self.balance < -1:
-                self.left_rotate()
+            self.left_rotate()
 
         elif self.balance > 1:
-            self.node.left.rebalance()
             if self.node.left.balance < 0:
                 self.node.left.left_rotate()
-            self.update_height()
-            self.update_balance()
-            if self.balance > 1:
-                self.right_rotate()
+            self.right_rotate()
         
     """
     Uses the same insertion logic as a binary search tree
